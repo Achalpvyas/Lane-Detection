@@ -7,26 +7,27 @@ import math
 #            Homography Estimation 
 ######################################################
 def estimateHomography():
-    img = cv2.imread('./Data/data_1/data/0000000302.png')
+    # img = cv2.imread('./Data/data_1/data/0000000302.png')
   
     
     # p1 = np.array([[590,289],[312,479],[726,295],[815,435]],np.float32)
     # p2 = np.array([[0,0],[0,200],[0,200],[200,200]],np.float32)
     
-    cv2.circle(img,(445,291),5,(0,255,255),-1)
-    cv2.circle(img,(733,278),5,(0,0,255),-1)
-    cv2.circle(img,(56,407),5,(0,255,255),-1)
-    cv2.circle(img,(856,447),5,(0,0,255),-1)
+    # cv2.circle(img,(445,291),5,(0,255,255),-1)
+    # cv2.circle(img,(733,278),5,(0,0,255),-1)
+    # cv2.circle(img,(56,407),5,(0,255,255),-1)
+    # cv2.circle(img,(856,447),5,(0,0,255),-1)
 
     p1 = np.array([[445,291],[56,407],[733,278],[856,447]],np.float32)
     p2 = np.array([[0,0],[0,500],[500,0],[500,500]],np.float32)
 
     H = cv2.getPerspectiveTransform(p1,p2)
-    warpedImage =cv2.warpPerspective(img,H,(500,500))
+    # warpedImage =cv2.warpPerspective(img,H,(500,500))
 
     # cv2.imshow('image',img)
-    cv2.imshow('image',warpedImage)
-    cv2.waitKey(0)
+    # cv2.imshow('image',warpedImage)
+    # cv2.waitKey(0)
+    return H 
 
 
 
@@ -49,18 +50,33 @@ def preProcess(image):
 
     x,y = edges.shape
 
-    crop = edges[math.floor(x/2):x,0:y]
-    print(x,y)
-    cv2.imshow('edges',crop)
+    # crop = edges[math.floor(x/2):x,0:y]
+    edges[0:math.floor(x/2),0:y] = 0
+    # print(x,y)
+    # cv2.imshow('edges',edges)
+    return edges
 
+
+def detectLaneCandidates(pf,frame):
+    # H = estimateHomography()
+    # warpedImage = cv2.warpPerspective(image,H,(500,500))
+    
+    # cv2.imshow('warpedImage',warpedImage)
+    # so = cv2.Sobel(pf,cv2.CV_64F,1,0,ksize=5) 
+    # cv2.imshow('sobel',so)
+    
+
+   
 
 
 
 ######################################################
-#               Process Frame
+#               Process Frame
 ######################################################
 def processFrame(frame):
-    preProcess(frame)
+    preprocessedFrame = preProcess(frame)
+    detectLaneCandidates(preprocessedFrame,frame)
+    cv2.imshow('sobel',frame)
 
 
 
