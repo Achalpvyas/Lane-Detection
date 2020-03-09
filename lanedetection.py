@@ -7,7 +7,7 @@ import math
 #            Homography Estimation 
 ######################################################
 def estimateHomography():
-    # img = cv2.imread('./Data/data_1/data/0000000302.png')
+    img = cv2.imread('./Data/data_1/data/0000000302.png')
   
     
     # p1 = np.array([[590,289],[312,479],[726,295],[815,435]],np.float32)
@@ -18,11 +18,11 @@ def estimateHomography():
     # cv2.circle(img,(56,407),5,(0,255,255),-1)
     # cv2.circle(img,(856,447),5,(0,0,255),-1)
 
-    p1 = np.array([[445,291],[56,407],[733,278],[856,447]],np.float32)
-    p2 = np.array([[0,0],[0,500],[500,0],[500,500]],np.float32)
+    p1 = np.array([[265,257],[460,249],[128,323],[543,273]],np.float32)
+    p2 = np.array([[0,0],[500,0],[0,500],[500,500]],np.float32)
 
     H = cv2.getPerspectiveTransform(p1,p2)
-    # warpedImage =cv2.warpPerspective(img,H,(500,500))
+    warpedImage =cv2.warpPerspective(img,H,(500,500))
 
     # cv2.imshow('image',img)
     # cv2.imshow('image',warpedImage)
@@ -45,28 +45,62 @@ def preProcess(image):
     destination = cv2.undistort(image, K, dist, None, K)
 
     gray = cv2.cvtColor(destination,cv2.COLOR_BGR2GRAY)
-    blur = cv2.GaussianBlur(gray,(5,5),0) 
+    blur = cv2.GaussianBlur(gray,(1,1),0) 
     edges = cv2.Canny(blur,100,200)
-
+    # edges = cv2.Sobel(blur,cv2.CV_64F,0,1,ksize=3) 
+    
+    kernel = np.ones((2,2),np.uint8)
+    dilate = cv2.dilate(edges,kernel,iterations=3)
     x,y = edges.shape
 
     # crop = edges[math.floor(x/2):x,0:y]
-    edges[0:math.floor(x/2),0:y] = 0
-    # print(x,y)
-    # cv2.imshow('edges',edges)
-    return edges
+    dilate[0:math.floor(x/2),0:y] = 0
+
+    # cv2.imshow('edges',dilate)
+    # cv2.waitKey(0)
+    return dilate
 
 
 def detectLaneCandidates(pf,frame):
-    # H = estimateHomography()
-    # warpedImage = cv2.warpPerspective(image,H,(500,500))
-    
+    mask = colorSegmentation(frame)
+    res = cv2.bitwise_and(pf,pf,mask = mask)
+
+    H = estimateHomography()
+    warpedImage = cv2.warpPerspective(res,H,(500,500))
+
+    kernel = np.ones((2,2),np.uint8)
+    maskprop= cv2.dilate(mask,kernel,iterations=2)
+    # cv2.imshow('segmentation',res)
+    # cv2.imshow('frame',frame)
+    cv2.imshow('frame',warpedImage)
+
+    cv2.waitKey(0)
     # cv2.imshow('warpedImage',warpedImage)
     # so = cv2.Sobel(pf,cv2.CV_64F,1,0,ksize=5) 
-    # cv2.imshow('sobel',so)
-    
+    # cv2.imshow('sobel',pf)
 
-   
+     
+def colorSegmentation(frame):
+    hsv = cv2.cvtColor(frame,cv2.COLOR_BGR2HSV)
+
+    # Range for yellow 
+    lower_yellow = np.array([20,100,100])
+    upper_yellow = np.array([30,255,255])
+    mask1 = cv2.inRange(hsv, lower_yellow, upper_yellow)
+
+    # Range for white 
+    lower_white= np.array([0,0,168])
+    upper_white= np.array([172,111,255])
+    mask2 = cv2.inRange(hsv,lower_white,upper_white)
+
+    mask = mask2+mask1
+    # mask2 = cv2.bitwise_not(mask)
+    # cv2.imshow('res',mask)
+    # cv2.imshow('frame',frame)
+    # cv2.waitKey(0)
+
+    # res = cv2.bitwise_and(frame,frame,mask=mask)
+    return mask
 
 
 
@@ -76,7 +110,7 @@ def detectLaneCandidates(pf,frame):
 def processFrame(frame):
     preprocessedFrame = preProcess(frame)
     detectLaneCandidates(preprocessedFrame,frame)
-    cv2.imshow('sobel',frame)
+    # cv2.imshow('sobel',frame)
 
 
 
