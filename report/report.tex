@@ -40,6 +40,14 @@ We saw high density of pixels within the range 0-50. The goal was to increase th
 
 After performing histogram equalization, the pixel density was distributed but resulted in noise amplification clearly seen between pixel range 100-150. We tried to decrease the noise by using filters but could not decrease the noise.
 
+\item We employed gamma correction. This method could increase the quality by could not increase the contrast.
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=12cm]{gammahist}
+    \caption{Gamma Correction output}
+    \label{fig:gammahist}
+\end{figure}
+
 \item Then we multiplied each pixel with $\alpha$ and added by $\beta$. We found this method increased the contrast while decreasing the noise compared to histogram equalization. The histogram output of this method is given below:
 
 \begin{figure}[h]
@@ -70,6 +78,16 @@ We can see that the pixel density is distributed and at 255 there is sharp rise 
     \includegraphics[width=14cm]{histequvideo}
     \caption{Histogram Equalization output}
     \label{fig:histequvideo}
+\end{figure}
+
+\newpage
+\item Gamma Correction Output: This contains the snippet output obtained by employing Gamma correction. We can see that contrast is not improved.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=14cm]{gammavideo}
+    \caption{Gamma Correction output}
+    \label{fig:gammavideo}
 \end{figure}
 
 \item Method Employed Output: This is the snippet of the image frame from the enhanced video. We improved the contrast and decreased the noise levels.We can clearly see the lanes and road signs from the enhanced frame.
