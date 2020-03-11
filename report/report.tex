@@ -146,13 +146,17 @@ Mask2 contains only the yellow pixels of the lane.
 
 \item We do this for the entire lower half of all the frames of the video.
 
-\item Then we use $ployfit()$ function to fit a polynomial along the white and yellow lines. Then $fillpoly()$ function fills the polynomial between the white and yellow lanes.
-
-\section{Homography}
-
-\item In our code we have made used of homography in which we have manualy obtained the 4 points in order to do the homography transfromation. In this method we have manually obtained minimum of 4 points required for the homography transformation.   
-
-
 \end{enumerate}
+\subsubsection{Step 3: Reﬁne the Lane Detection }
+In order to refine the lane detection, we used $ployfit()$ function to fit a polynomial along the white and yellow lines. Then $fillpoly()$ function fills the polynomial between the white and yellow lanes. We used polynomial of second degree as the lanes turns left and right.
+
+\subsubsection{Step 4 : Turn Prediction }
+The method employed to predict the turn is by constantly checking the gradient of the central line. For each frame midpoints of the left and right lane are calculated and compared with the preceeding point. If the midpoint moves towards right and turn is predicted right or else left.
+
+\section{Use of Homography}
+
+In our code we have made used of homography in which we have manualy obtained the 4 points in order to do the homography transfromation. In this method we have manually obtained minimum of 4 points required for the homography transformation.   
+
+
 \end{document}
 
