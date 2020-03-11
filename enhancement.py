@@ -2,25 +2,45 @@ import numpy as np
 import cv2
 import matplotlib.pyplot as plt
 
+# Applying gamma correction
+def gammaCorrection(frame, gamma = 1.0):
+    newPixel = np.zeros(256, np.uint8)
+    for i in range(256):
+        newPixel[i] = np.clip(pow(i / 255.0, gamma) * 255.0, 0, 255)
+    frame = newPixel[frame]
+    return frame
+
 # Function to view Histogram plots
-def viewPlot(inputFrame, enhancedFrame, histequ):
+def viewPlot(inputFrame, enhancedFrame, histequ, gamma):
     # Figures for plotting histograms
     fig = plt.figure()
     plt1 = fig.add_subplot(221) 
     plt2 = fig.add_subplot(222)
     plt3 = fig.add_subplot(223)
+    plt4 = fig.add_subplot(224)
 
     # Plotting original image
     plt1.hist(inputFrame.ravel(),256,[0,256])
-    plt1.set_title('Original Image Histogram')
+    plt1.set_title('Input Frame Histogram')
+    plt1.set_xlabel('pixel')
+    plt1.set_ylabel('pixel density')
 
     # Plotting histogram of enhanced image
     plt2.hist(enhancedFrame.ravel(),256,[0,256])
-    plt2.set_title('Enhanced Image Histogram')
+    plt2.set_title('Enhanced Frame Histogram')
+    plt2.set_xlabel('pixel')
+    plt2.set_ylabel('pixel density')
 
     # Plotting histogram output of histogram equalization 
     plt3.hist(histequ.ravel(),256,[0,256])
     plt3.set_title('Histogram Equalization')  
+    plt3.set_xlabel('pixel')
+    plt3.set_ylabel('pixel density')
+
+    plt4.hist(gamma.ravel(),256,[0,256])
+    plt4.set_title('Gamma Correction')  
+    plt4.set_xlabel('pixel')
+    plt4.set_ylabel('pixel density')
     plt.show()
 
 
@@ -59,15 +79,19 @@ def videoEnhancement(frame):
     enhanceImage = frame32*alpha + beta
     enhanceImage = np.clip(enhanceImage,0,255)
     enhanceImage=np.asarray(enhanceImage,dtype="uint8")
-
+    gamma = gammaCorrection(frame, 0.4)
     # To view Histogram plots uncomment the below line
-    # viewPlot(frame, enhanceImage , equ)
+    # viewPlot(frame, enhanceImage , equ, gamma)
 
     # Enhanced Image output
     cv2.imshow('Enhanced Video',enhanceImage)
 
     # Input frame
-    cv2.imshow('Imput Video',frame)
+    cv2.imshow('Input Video',frame)
+
+    cv2.imshow("Histogram Equalization", equ)
+
+    cv2.imshow("Gamma", gamma)
 
     return enhanceImage
 
