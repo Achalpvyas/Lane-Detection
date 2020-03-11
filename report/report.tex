@@ -105,6 +105,48 @@ For accessing the full length output video please click on this \href{https://dr
 \subsection{References:}
 \begin{enumerate}
 \item \href{https://docs.opencv.org/3.4/d3/dc1/tutorial_basic_linear_transform.html}{\underline{Opencv documentation for improving the contrast and quality of the image.}}
+\end{enumerate}
+
+\section{Problem 2}
+In this problem, we are given one video and list of images and we need to provide two videos detecting lanes,
+
+\subsection{Procedure employed}
+\subsubsection{Step1: Prepare the Input}
+\begin{enumerate}
+\item For given list of images we had an additional step of first converting them into a video
+
+\item First we used in-build Opencv function to undistort the image using the given camera parameters.
+
+\item Then we used Gaussian filter to reduce noise in the image.
+
+\item Then we used in-build Opencv canny edge detection function to extract the edges from the image.
+
+\item For region of interest, we cropped the upper part of the image which is the sky and made lower part of the image as  our region of interest(ROI).
+\end{enumerate}
+\subsubsection{Step2: Detect Lane Candidates - Histogram of Lane Pixels}
+\begin{enumerate}
+\item First we took 4 points, 2  from each lines to compute the homography.
+
+\item Then using in-built Opencv $warpperspective()$ function, we warped the image and got the top view of the road.
+
+\item We are only interested in lanes. So we removed unwanted color pixels by converting RGB image to HSL image. This will highlight only the lanes.
+
+\item There were two colors with high pixel density on the HSL image which were white and yellow. We used the concept of masking to separate these two colors. By using $inrange()$ function to separate the yellow and white pixels in mask1 and mask2 separately.
+
+Mask1 contains only the white pixels of the lane.
+Mask2 contains only the yellow pixels of the lane.
+
+\item Mask1 and Mask2 are now separate anded with the image with edges(Output of Canny) using $bitwiseand()$ function in opencv. The resulting two images will contain only lanes which are again ored using $bitwiseor()$ function to get a single color image consisting of only lanes with edges. 
+
+\item Now we need to know the indexes of the pixel which corresponds to white and yellow pixels. For this, we converted the HSL image to gray image and obtained histogram of the image.
+
+\item On histogram we see two peaks, which correspond to white and yellow pixels got from the lower half the image. We divided the lower half of the lower half of the image into two smaller frames. These smaller frames are divided into two categories based on their position with respect to the midpoint of the histogram. The frames on the left of the midpoint are for left (yellow) lane and right are for right (white) lane. The height of these frames depends on how much we are dividing the lower half of the image.
+
+\item We create two lists for yellow and white lanes. We loop through these smaller frames and if any pixel is found with non-zero value we add the indexes into the corresponding yellow and white list.
+
+\item We do this for the entire lower half of all the frames of the video.
+
+\item Then we use $ployfit()$ function to fit a polynomial along the white and yellow lines. Then $fillpoly()$ function fills the polynomial between the white and yellow lanes.
 
 \end{enumerate}
 \end{document}
