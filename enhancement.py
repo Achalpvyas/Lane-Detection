@@ -2,82 +2,97 @@ import numpy as np
 import cv2
 import matplotlib.pyplot as plt
 
+# Function to view Histogram plots
+def viewPlot(inputFrame, enhancedFrame, histequ):
+    # Figures for plotting histograms
+    fig = plt.figure()
+    plt1 = fig.add_subplot(221) 
+    plt2 = fig.add_subplot(222)
+    plt3 = fig.add_subplot(223)
 
-# _,thresh = cv2.threshold(warpedtag,220,255,cv2.THRESH_BINARY)
+    # Plotting original image
+    plt1.hist(inputFrame.ravel(),256,[0,256])
+    plt1.set_title('Original Image Histogram')
 
-def preprocessing(img):
-    gray = cv2.cvtColor(img,cv2.COLOR_BGR2GRAY)
-    blur = cv2.GaussianBlur(gray,(5,5),0) 
-    edges = cv2.Canny(blur,100,200)
-    return edges 
+    # Plotting histogram of enhanced image
+    plt2.hist(enhancedFrame.ravel(),256,[0,256])
+    plt2.set_title('Enhanced Image Histogram')
 
-def histogram(img):
-    gray = cv2.cvtColor(img,cv2.COLOR_BGR2GRAY)
-    pixelNumber = gray.shape[0] * gray.shape[1]
-    # cv2.imshow("gray image",gray)
-    pixelDensity = np.zeros(256)
+    # Plotting histogram output of histogram equalization 
+    plt3.hist(histequ.ravel(),256,[0,256])
+    plt3.set_title('Histogram Equalization')  
+    plt.show()
 
-    # pixelDensity[gray] += 1
-    for i in range(0, gray.shape[0]):
-        for j in range(0, gray.shape[1]):
-            pixelDensity[gray[i,j]] += 1
-    # print(pixelDensity)
-    # print('--------------')
-    # print(pixelNumber)
-    # if cv2.waitKey(1) & 0xFF == ord('q'):
-    #      cv2.destroyAllWindows()
-    return pixelDensity, pixelNumber
 
-def histogramEqualization(pixelDensity, pixelNumber):
-    CDF = np.zeros(256)
-    for i in range(0,len(pixelDensity)):
-        for j in range(0, i+1):
-            CDF[i] += pixelDensity[j] / pixelNumber
-    # print('---------')
-    # print(CDF)
-    return CDF
+def videoEnhancement(frame):
+    gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+    # equ = cv2.equalizeHist(gray)
+    # # ret, thresh1 = cv2.threshold(equ, 225, 150, cv2.THRESH_BINARY) 
+    # # bilateral = cv2.bilateralFilter(equ, 9, 75, 75)
+    # # medBlur = cv2.medianBlur(equ,5) 
 
-def newImage(gray, CDF):
-    for i in range(0, gray.shape[0]):
-        for j in range(0, gray.shape[1]):
-            gray[i,j] = np.round(CDF[gray[i,j]]*255)
+    # Histogram Equalization on gray image
+    equ = cv2.equalizeHist(gray)
+
+    # Applying different techniques to improve image quality
+    # # plt.hist(equ.ravel(),256,[0,256])
+    # # print(p)
+    # # plt.plot(np.arange(0,256,1),p)
+    # # plt.show()
+    # # kernel = np.ones((5, 5), np.uint8) 
     
+    # # Using cv2.erode() method  
+    # # image = cv2.erode(equ, kernel)  
+    # # img_dilation = cv2.dilate(image, kernel)
+    # # kernel = np.array([[-1,-1,-1], [-1,9,-1], [-1,-1,-1]])
+    # # im = cv2.filter2D(equ, -1, kernel)
+    # # equ = cv2.adaptiveThreshold(equ, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 31, 2)
+    # equ = cv2.threshold(equ, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
 
-# img = cv2.imread('Lena.png')
-# gray = cv2.cvtColor(img,cv2.COLOR_BGR2GRAY)
-# p,q = histogram(img)
-# # print(p)
-# plt.plot(np.arange(0,256,1),p)
-# plt.show()
-# cdf = histogramEqualization(p,q)
-# plt.plot(np.arange(0,256,1),cdf)
-# plt.show()
-# newImage(gray,cdf)
+    frame32=np.asarray(frame,dtype="int32")
+    # Multiplying factor
+    alpha = 3.3
+    # Adding factor
+    beta = 50
+
+    # Making darker pixels bright
+    enhanceImage = frame32*alpha + beta
+    enhanceImage = np.clip(enhanceImage,0,255)
+    enhanceImage=np.asarray(enhanceImage,dtype="uint8")
+
+    # To view Histogram plots uncomment the below line
+    # viewPlot(frame, enhanceImage , equ)
+
+    # Enhanced Image output
+    cv2.imshow('Enhanced Video',enhanceImage)
+
+    # Input frame
+    cv2.imshow('Imput Video',frame)
+
+    return enhanceImage
 
 
 ######################################################
-#              Reading Video 
+#     Reading Input Videoand Creating output video 
 #####################################################
+
+# For reading input video
 cap = cv2.VideoCapture('NightDrive.mp4')
+fourcc = cv2.VideoWriter_fourcc(*'XVID')
+output = cv2.VideoWriter('NightDriveOutput.avi',fourcc, 20.0,(960,540))
 
 while(cap.isOpened()):
     ret, frame = cap.read()
+
     frame = cv2.resize(frame, None,fx=0.5, fy=0.5, interpolation = cv2.INTER_CUBIC)
-    # p,q = histogram(frame)
-    gray = cv2.cvtColor(frame,cv2.COLOR_BGR2GRAY)
-    # print(p)
-    # plt.plot(np.arange(0,256,1),p)
-    # plt.show()
-    # cdf = histogramEqualization(p,q)
-    # # plt.plot(np.arange(0,256,1),cdf)
-    # # plt.show()
-    # newImage(gray,cdf)
-    # cv2.imshow("gray image",gray)
-    equ = cv2.equalizeHist(gray)
-    cv2.imshow("output",equ)
+    # print(frame.shape)
+    enhancedFrame = videoEnhancement(frame)
+
+    output.write(enhancedFrame)
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break
 
 cap.release()
+output.release()
 cv2.destroyAllWindows()
 
