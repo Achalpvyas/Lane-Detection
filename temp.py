@@ -8,20 +8,20 @@ import math
 #            Homography Estimation 
 ######################################################
 def estimateHomography():
-    img = cv2.imread('./Data/data_1/data/0000000222.png')    
+    # img = cv2.imread('./Data/data_1/data/0000000222.png')    
 
-    x,y,_ = img.shape
-    cropImg = img[math.floor(x/2):x,0:y]
+    # x,y,_ = img.shape
+    # cropImg = img[math.floor(x/2):x,0:y]
     # p1 = np.array([[590,289],[312,479],[726,295],[815,435]],np.float32)
     # p2 = np.array([[0,0],[0,200],[0,200],[200,200]],np.float32)
     
     # p1 = np.array([[265,257],[460,249],[128,323],[543,273]],np.float32)
     # p2 = np.array([[0,0],[500,0],[0,500],[500,500]],np.float32)
 
-    cv2.circle(cropImg,(539,67),5,(0,0,255),-1)
-    cv2.circle(cropImg,(360,187),5,(0,255,0),-1)
-    cv2.circle(cropImg,(745,70),5,(255,0,0),-1)
-    cv2.circle(cropImg,(818,190),5,(0,255,255),-1)
+    # cv2.circle(cropImg,(539,67),5,(0,0,255),-1)
+    # cv2.circle(cropImg,(360,187),5,(0,255,0),-1)
+    # cv2.circle(cropImg,(745,70),5,(255,0,0),-1)
+    # cv2.circle(cropImg,(818,190),5,(0,255,255),-1)
 
     # p1 = np.array([[529,329],[340,454],[741,326],[818,453]],np.float32)
     # p2 = np.array([[0,0],[0,300],[300,0],[300,300]],np.float32)
@@ -29,7 +29,7 @@ def estimateHomography():
     p1 = np.array([[539,67],[360,187],[745,70],[818,190]],np.float32)
     p2 = np.array([[75,75],[75,500],[300,75],[300,500]],np.float32)
     H = cv2.getPerspectiveTransform(p1,p2)
-    warpedImage =cv2.warpPerspective(cropImg,H,(400,500))
+    # warpedImage =cv2.warpPerspective(cropImg,H,(400,500))
 
     # cv2.imshow('image',cropImg)
     # cv2.imshow('image2',warpedImage)
