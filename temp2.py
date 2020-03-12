@@ -114,7 +114,6 @@ def detectLanes(pf):
         # To Be done
         pass
 
-
         # plotting graphs 
         _,x = warpedFrame.shape
         stepsize = x/hist.shape[0]
