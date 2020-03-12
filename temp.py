@@ -29,10 +29,11 @@ def estimateHomography():
     p1 = np.array([[539,67],[360,187],[745,70],[818,190]],np.float32)
     p2 = np.array([[75,75],[75,500],[300,75],[300,500]],np.float32)
     H = cv2.getPerspectiveTransform(p1,p2)
-    # warpedImage =cv2.warpPerspective(cropImg,H,(400,500))
+    warpedImage =cv2.warpPerspective(cropImg,H,(400,500))
 
     # cv2.imshow('image',cropImg)
     # cv2.imshow('image2',warpedImage)
+    # cv2.waitKey(0)
 
     return H 
 
@@ -73,6 +74,7 @@ def preProcess(frame):
     opening =cv2.morphologyEx(dilateFrame, cv2.MORPH_OPEN, kernel)
 
     # cv2.imshow('res',opening)
+    # cv2.waitKey(0)
     return opening
 
 
@@ -109,21 +111,9 @@ def detectLanes(pf):
     rightLanePos = np.argmax(hist[mid:]) + mid
     leftLanePos = np.argmax(hist[:mid])
     
-    # leftLaneCoor,rightLaneCoor = getLanePixels(warpedFrame, leftLanePos,rightLanePos) 
-
-    # if(leftLaneCoor is not None  and rightLaneCoor is not None):
-        # pass
-        # polyLeft = np.polyfit(leftLaneCoor[:,0],leftLaneCoor[:,1], 2)
-        # polyRignt = np.polyfit(rightLaneCoor[:,0],rightLaneCoor[:,1], 2)
-        
-         
-        # print(warpedFrame.shape) 
-        # leftLanePixels = warpedFrame[leftLanePos:]
-        # rightLanePixels = warpedFrame[rightLanePos::]
-
-        # plotting graphs 
     _,x = warpedFrame.shape
     stepsize = x/hist.shape[0]
+
 
     titles = ['warpedFrame']
     images = [warpedFrame]
@@ -134,7 +124,8 @@ def detectLanes(pf):
         else:
             plt.imshow(images[i],'gray')
             plt.title(titles[i])
-    plt.show()
+    # plt.show()
+    # cv2.waitKey(0)
     
 
 
