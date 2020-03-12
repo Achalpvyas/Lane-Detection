@@ -140,14 +140,15 @@ In this problem, we are given one video and list of images and we need to provid
     \label{fig:homography}
 \end{figure}
 
-\item We are only interested in lanes. So we removed unwanted color pixels by converting RGB image to HSL image. This will highlight only the lanes.
+\item The image is first converted from RGB to HSL as HSL is more desirable in its color distribution range.
 
 \item There were two colors with high pixel density on the HSL image which were white and yellow. We used the concept of masking to separate these two colors. By using $inrange()$ function to separate the yellow and white pixels in mask1 and mask2 separately.
 
 Mask1 contains only the white pixels of the lane.
 Mask2 contains only the yellow pixels of the lane.
+Combine Mask1 and Mask2 to yield one mask 
 
-\item Mask1 and Mask2 are now separate anded with the image with edges(Output of Canny) using $bitwiseand()$ function in opencv. The resulting two images will contain only lanes which are again ored using $bitwiseor()$ function to get a single color image consisting of only lanes with edges. 
+\item Mask is anded with the image with edges(Output of Canny) using $bitwiseand()$ function in opencv. The resulting two images will contain only lanes which are again ored using $bitwiseor()$ function to get a single color image consisting of only lanes with edges. 
 
 \begin{figure}[h]
     \centering
@@ -159,7 +160,9 @@ Mask2 contains only the yellow pixels of the lane.
 
 \item Now we need to know the indexes of the pixel which corresponds to white and yellow pixels. For this, we converted the HSL image to gray image and obtained histogram of the image.
 
-\item On histogram we see two peaks, which correspond to white and yellow pixels got from the lower half the image. We divided the lower half of the lower half of the image into two smaller frames. These smaller frames are divided into two categories based on their position with respect to the midpoint of the histogram. The frames on the left of the midpoint are for left (yellow) lane and right are for right (white) lane. The height of these frames depends on how much we are dividing the lower half of the image.
+\item On histogram we see two peaks, which correspond to left and right lane pixels obtained from the lower half of the 
+  image. The image is segmented into two categories based on their position with respect to the midpoint of histogram.
+  The pixels on the left and right of the midpoint are for the left and right lanes respectively. We take the max value in the left and right portion as the left and right position of the lanes and then proceed to obtain the pixel coordinates.
 
 \begin{figure}[h]
     \centering
@@ -168,13 +171,15 @@ Mask2 contains only the yellow pixels of the lane.
     \label{fig:histogram}
 \end{figure}
 
-\item We create two lists for yellow and white lanes. We loop through these smaller frames and if any pixel is found with non-zero value we add the indexes into the corresponding yellow and white list.
+\item The pixel coordinates of the left and right lanes are obtained by first finding non zero valued coordinates in the warped frame. Then using bounding boxes, points  within bounding boxes and belonging to left and right lanes are added to the left and right coordinates list repectively.
 
 \item We do this for the entire lower half of all the frames of the video.
 
 \end{enumerate}
 \subsubsection{Step 3: Reﬁne the Lane Detection }
-In order to refine the lane detection, we used $ployfit()$ function to fit a polynomial along the white and yellow lines. Then $fillpoly()$ function fills the polynomial between the white and yellow lanes. Currently the code only ha
+In order to refine the lane detection, we used $polyfit()$ function to fit a polynomial along the left and right lines. Then $fillpoly()$ function fills the polynomial between the left and right lanes. Currently the code doesn't produce 
+the output expected. What is left is to draw the function on the image and then warp the warped framed back to the original 
+frame. 
 
 \subsubsection{Step 4 : Turn Prediction }
 The method employed to predict the turn is by constantly checking the gradient of the central line. For each frame midpoints of the left and right lane are calculated and compared with the preceeding point. If the midpoint moves towards right and turn is predicted right or else left.

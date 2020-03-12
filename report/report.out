@@ -1,0 +1,15 @@
+\BOOKMARK [1][-]{section.1}{Problem1}{}% 1
+\BOOKMARK [2][-]{subsection.1.1}{Method Employed}{section.1}% 2
+\BOOKMARK [2][-]{subsection.1.2}{Outputs Obtained}{section.1}% 3
+\BOOKMARK [2][-]{subsection.1.3}{Accessing output video}{section.1}% 4
+\BOOKMARK [2][-]{subsection.1.4}{References:}{section.1}% 5
+\BOOKMARK [1][-]{section.2}{Problem 2}{}% 6
+\BOOKMARK [2][-]{subsection.2.1}{Procedure employed}{section.2}% 7
+\BOOKMARK [3][-]{subsubsection.2.1.1}{Step1: Prepare the Input}{subsection.2.1}% 8
+\BOOKMARK [3][-]{subsubsection.2.1.2}{Step2: Detect Lane Candidates - Histogram of Lane Pixels}{subsection.2.1}% 9
+\BOOKMARK [3][-]{subsubsection.2.1.3}{Step 3: Reﬁne the Lane Detection }{subsection.2.1}% 10
+\BOOKMARK [3][-]{subsubsection.2.1.4}{Step 4 : Turn Prediction }{subsection.2.1}% 11
+\BOOKMARK [1][-]{section.3}{Accessing output videos:}{}% 12
+\BOOKMARK [1][-]{section.4}{Use of Homography}{}% 13
+\BOOKMARK [1][-]{section.5}{ Hough transform}{}% 14
+\BOOKMARK [1][-]{section.6}{Team Members:}{}% 15
