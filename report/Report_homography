@@ -21,6 +21,6 @@ As  we know that in the actual condition as show in the video the camera does no
 
 What we did is we took one of the image when the car is moving straight on the road and we have a clear view of the parallel lane on the either side of the road. Then we manually selected the four points needed for the  homography. We have selected two points from each of the two lanes. 
 
-
+The code written by us can be applied to any of the case in the autonomous car.The selection of the fore manually selected points can be made from any of the location of the two parallel lines of the lanes.
 
 \end{document}
