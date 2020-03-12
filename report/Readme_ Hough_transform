@@ -1,0 +1,29 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+
+\title{Report}
+\author{avyas }
+\date{March 2020}
+
+\usepackage{natbib}
+\usepackage{graphicx}
+
+\begin{document}
+
+\maketitle
+
+
+
+\section{ Hough transform}
+
+
+The Hough transform is technique used in the image analysis and computer vision that makes use of the feature extraction method. This technique is aimed towards finding out the imperfect instances in the objects, by making the use of voting procedure. In this process the local maxima are obtained in  terms of the object candidates, this process in carried out in a parameter space.
+ This transform works very well with the vertical lines. In this method we make use of polar coordinates. Thus it will not only identify the lines in the image but will also identify the position of the arbitrary shapes, commonly circles and ellipse.
+ 
+ One of the most simplest way of detecting straight line is by using Hough Transform. The straight line is represented in the form of point (b,m) where b and m are taken from general equation of the line y = mx + b. For incorporating the slope of the lines we use the equation as denoted below:
+
+
+ {\displaystyle r=x\cos \theta +y\sin \theta } ,
+ 
+
+\end{document}
