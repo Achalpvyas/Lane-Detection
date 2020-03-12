@@ -104,27 +104,107 @@ def detectLanes(pf):
     H = estimateHomography()
     warpedFrame =cv2.warpPerspective(pf,H,(400,500))
 
-    
+
+    #Find left and right lanes
     hist = np.sum(warpedFrame,axis = 0) 
-
-    _,x = warpedFrame.shape
-    stepsize = x/hist.shape[0]
+    mid = math.floor(hist.shape[0]/2)
+    rightLanePos = [np.argmax(hist[mid:]) + mid, warpedFrame.shape[0]]
+    leftLanePos = [np.argmax(hist[:mid]), warpedFrame.shape[0]]
     
-    # show the plotting graph of an image 
+    leftLaneCoor,rightLaneCoor = getLanePixels(warpedFrame, leftLanePos,rightLanePos) 
 
-    # plt.imshow(warpedFrame) 
-    # cv2.imshow('process')
+    # if(leftLaneCoor and rightLaneCoor):
+        # pass
+        # polyLeft = np.polyfit(leftLaneCoor[:,0],leftLaneCoor[:,1], 2)
+        # polyRignt = np.polyfit(rightLaneCoor[:,0],rightLaneCoor[:,1], 2)
 
-    titles = ['warpedFrame']
-    images = [warpedFrame]
-    for i in range(2):
-        plt.subplot(1,2,i+1)
-        if(i == 1):
-            plt.plot(np.arange(0,x,stepsize),hist) 
-        else:
-            plt.imshow(images[i],'gray')
-            plt.title(titles[i])
-    plt.show()
+        # print(warpedFrame.shape) 
+        # leftLanePixels = warpedFrame[leftLanePos:]
+        # rightLanePixels = warpedFrame[rightLanePos::]
+
+        # plotting graphs 
+        # _,x = warpedFrame.shape
+        # stepsize = x/hist.shape[0]
+
+        # titles = ['warpedFrame']
+        # images = [warpedFrame]
+        # for i in range(2):
+            # plt.subplot(1,2,i+1)
+            # if(i == 1):
+                # plt.plot(np.arange(0,x,stepsize),hist) 
+            # else:
+                # plt.imshow(images[i],'gray')
+                # plt.title(titles[i])
+        # plt.show()
+     
+
+def getLanePixels(frame, leftLanePos, rightLanePos):
+    #find non zero pixels
+    n_x,n_y = np.nonzero(frame)
+    n_x.reshape(len(n_x),1)
+    n_y.reshape(len(n_y),1)
+    n = np.column_stack((n_x,n_y)) 
+
+
+    #parameters 
+    lCoor = rCoor = []
+    boxHeight = 100
+    boxWidth = 20
+    boxPadding = 10
+    numBoxes = math.floor(frame.shape[0]/boxHeight)
+    
+    for i in range(numBoxes):
+        
+        leftBoxCoordinates =  [[leftLanePos[0]-boxWidth,boxWidth + leftLanePos[0]],           #width range
+                               [leftLanePos[1]-boxHeight*(i),leftLanePos[1]-boxHeight*(i+1)]] #Height range
+
+        rightBoxCoordinates = [[rightLanePos[0]-boxWidth,boxWidth + rightLanePos[0]],           #width range
+                               [rightLanePos[1]-boxHeight*(i),rightLanePos[1]-boxHeight*(i+1)]] #Height range
+                               
+        lx = np.logical_and(n_x >= leftBoxCoordinates[0][0],n_x <=leftBoxCoordinates[0][1])  
+        ly = np.logical_and(n_y <= leftBoxCoordinates[1][0],n_y >=leftBoxCoordinates[1][1])
+        l = np.argwhere(np.logical_and(lx,ly) == True)
+       
+
+        if(len(l)>0):
+            lCoor.append(np.column_stack((n_x[l],n_y[l])))
+   
+        rx = np.logical_and(n_x >= rightBoxCoordinates[0][0],n_x <=rightBoxCoordinates[0][1])
+        ry = np.logical_and(n_y <= rightBoxCoordinates[1][0],n_y >=rightBoxCoordinates[1][1])
+        r = np.argwhere(np.logical_and(rx,ry) == True)
+        if(len(r)>0):
+            rCoor.append(np.column_stack((n_x[r],n_y[r])))
+
+       
+        # bottomLeft = width - leftLanePos[0]
+        # bottomRight = width + leftLane[0]
+        # topLeft = topRight = 10 + leftLanePos[0]*i
+        
+        #Drawing rectangles
+        start_point = (leftLanePos[0]-boxWidth,leftLanePos[1] - boxHeight*i) 
+        end_point = (leftLanePos[0]+boxWidth,leftLanePos[1] - boxHeight*(i-1)) 
+        color = (255, 255, 255) 
+        thickness = 3
+        cv2.rectangle(frame, start_point, end_point, color, thickness) 
+
+        start_point = (rightLanePos[0]-boxWidth,rightLanePos[1] - boxHeight*i) 
+        end_point = (rightLanePos[0]+boxWidth,rightLanePos[1] - boxHeight*(i-1)) 
+        color = (255, 255, 255) 
+        thickness = 3
+        cv2.rectangle(frame, start_point, end_point, color, thickness) 
+
+        cv2.imshow('warpedFrame',frame)
+        cv2.waitKey(0)
+    
+    lCoordinates = np.asarray(lCoor)
+    rCoordinates = np.asarray(rCoor)
+    print(lCoordinates[0])
+    plt.plot(lCoordinates[0][:,0],lCoordinates[0][:,1])
+    plt.pause(0.001)
+    print(lCoordinates.shape)
+    print(rCoordinates.shape)
+    return [[0],[0]]
+  
 
 
 ######################################################
@@ -150,10 +230,10 @@ while(cap.isOpened()):
     # frame = cv2.resize(frame, None,fx=0.9, fy=0.9, interpolation = cv2.INTER_CUBIC)
 
     processFrame(frame)
-    cv2.imshow('frame',frame)
-    plt.pause(0.001)
+    # cv2.imshow('frame',frame)
+    # plt.pause(0.001)
 
-    if cv2.waitKey(1) & 0xFF == ord('q'):
+    if cv2.waitKey(0) & 0xFF == ord('q'):
         break
 
 
