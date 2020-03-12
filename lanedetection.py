@@ -104,36 +104,59 @@ def detectLanes(pf):
     #Find left and right lanes
     hist = np.sum(warpedFrame,axis = 0) 
     mid = math.floor(hist.shape[0]/2)
-    # rightLanePos = [np.argmax(hist[mid:]) + mid, warpedFrame.shape[0]]
-    # leftLanePos = [np.argmax(hist[:mid]), warpedFrame.shape[0]]
-    rightLanePos = np.argmax(hist[mid:]) + mid
-    leftLanePos = np.argmax(hist[:mid])
+    rightLanePos = [np.argmax(hist[mid:]) + mid, warpedFrame.shape[0]]
+    leftLanePos = [np.argmax(hist[:mid]), warpedFrame.shape[0]]
     
-    # leftLaneCoor,rightLaneCoor = getLanePixels(warpedFrame, leftLanePos,rightLanePos) 
+    leftLaneCoor,rightLaneCoor = getLanePixels(warpedFrame, leftLanePos,rightLanePos) 
+   
+    #
+    out_img = np.dstack((warpedFrame,warpedFrame,warpedFrame))*255
 
-    # if(leftLaneCoor is not None  and rightLaneCoor is not None):
-        # pass
+    if(leftLaneCoor is not None  and rightLaneCoor is not None):
+
+        # print(leftLaneCoor[:,0])
         # polyLeft = np.polyfit(leftLaneCoor[:,0],leftLaneCoor[:,1], 2)
         # polyRignt = np.polyfit(rightLaneCoor[:,0],rightLaneCoor[:,1], 2)
         
-         
+        # print(polyRight)    
+        ploty = np.linspace(0, warpedFrame.shape[0]-1, warpedFrame.shape[0])
+        out_img[leftLaneCoor[:,0],leftLaneCoor[:,1]] = [255, 0, 0]
+        out_img[rightLaneCoor[:,0],rightLaneCoor[:,1]] = [255, 0, 0]
+
+ 
+        # left_fitx = polyLeft[0]*ploty**2 + polyLeft[1]*ploty + polyLeft[2]
+        # right_fitx = polyRight[0]*ploty**2 + polyRight[1]*ploty + polyRight[2]
+
+        # left_line_pts = np.array([np.transpose(np.vstack([left_fitx, ploty]))])
+        # right_line_pts = np.array([np.flipud(np.transpose(np.vstack([right_fitx,
+                              # ploty])))])
+
+        # image_center = img_edge.shape[0]/2
+
+        # pts = np.hstack((left_line_pts, right_line_pts))
+        # pts = np.array(pts, dtype=np.int32)
+
+
+        # color_blend = np.zeros_like(img).astype(np.uint8)
+        # cv2.fillPoly(color_blend, pts, (0,255, 0))
+
         # print(warpedFrame.shape) 
         # leftLanePixels = warpedFrame[leftLanePos:]
         # rightLanePixels = warpedFrame[rightLanePos::]
 
         # plotting graphs 
-    _,x = warpedFrame.shape
-    stepsize = x/hist.shape[0]
+        _,x = warpedFrame.shape
+        stepsize = x/hist.shape[0]
 
-    titles = ['warpedFrame']
-    images = [warpedFrame]
-    for i in range(2):
-        plt.subplot(1,2,i+1)
-        if(i == 1):
-            plt.plot(np.arange(0,x,stepsize),hist) 
-        else:
-            plt.imshow(images[i],'gray')
-            plt.title(titles[i])
+        titles = ['warpedFrame']
+        images = [warpedFrame]
+        for i in range(2):
+            plt.subplot(1,2,i+1)
+            if(i == 1):
+                plt.plot(np.arange(0,x,stepsize),hist) 
+            else:
+                plt.imshow(images[i],'gray')
+                plt.title(titles[i])
     plt.show()
     
 
@@ -202,8 +225,9 @@ def getLanePixels(frame, leftLanePos, rightLanePos):
         lCoordinates = np.concatenate(lCoor,axis = 0)
     if(len(rCoor)>1):
         rCoordinates = np.concatenate(rCoor,axis = 0) 
+
+
     return [lCoordinates,rCoordinates]
-  
 
 
 ######################################################
@@ -216,6 +240,24 @@ def processFrame(frame):
     # cv2.imshow('sobel',frame)
     # estimateHomography()
 
+
+
+######################################################
+#                  Turn Prediction
+######################################################
+def turnPrediction(frame, leftLane, rightLane):
+    imageCenter = frame.shape[1]//2
+    output = ""
+    laneCenter = (leftLane + RightLane)//2
+    if imageCenter > leftLane + laneCenter:
+        output = output + "Vehicle is turning Left"
+    elif imageCenter < leftLane + laneCenter:
+        output = output + "Vehicle is turning right"
+    else:
+        output = output + "Vehicle is moving straight"
+    
+    # frame = cv2.putText(frame, output, (100,100), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 2, cv2.LINE_AA)
+    return frame
 
 
 ######################################################
