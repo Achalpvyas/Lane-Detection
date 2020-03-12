@@ -1,0 +1,26 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+
+\title{Report}
+\author{avyas }
+\date{March 2020}
+
+\usepackage{natbib}
+\usepackage{graphicx}
+
+\begin{document}
+
+\maketitle
+
+\section{Homography}
+
+In our code we have made used of homography in which we have manually obtained the 4 points in order to do the homography transformation. In this method we have manually obtained minimum of 4 points required for the homography transformation.   
+
+As  we know that in the actual condition as show in the video the camera does not look at he road from the top view. Instead it looks at the road from the same angle. Thus, what we have done is that, we have made use of homography and the distorted the image in a way that the lanes will we represented as parallel lines. Thus we will be having a top view by transforming the actual image.
+
+
+What we did is we took one of the image when the car is moving straight on the road and we have a clear view of the parallel lane on the either side of the road. Then we manually selected the four points needed for the  homography. We have selected two points from each of the two lanes. 
+
+
+
+\end{document}
